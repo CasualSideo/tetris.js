@@ -19,3 +19,11 @@ aside{display:flex;flex-direction:column;gap:12px}
 #stats{font:14px ui-monospace,monospace;white-space:pre;color:#a3a6c8}
 .hint,#status,#room p{color:#a3a6c8;font-size:.875rem;margin:0;text-align:center;max-width:36ch}
 @media(max-width:640px){#play{flex-wrap:wrap;justify-content:center}}
+.corner{position:fixed;top:12px;right:12px;padding:6px 12px;font-size:.8125rem;background:#1f2240;border-color:#3a3d63}
+dialog{background:#14162b;color:#e8e6f0;border:1px solid #3a3d63;border-radius:12px;padding:20px;width:min(380px,92vw)}
+dialog::backdrop{background:#0b0c1acc}
+dialog h2{margin:0 0 4px}
+dialog p{margin:0 0 12px;color:#a3a6c8;font-size:.875rem}
+.keyrow{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:4px 0}
+.keyrow button,#keysReset{min-width:130px;padding:6px 12px;background:#1f2240;border-color:#3a3d63}
+dialog .row{justify-content:space-between;margin-top:16px}
