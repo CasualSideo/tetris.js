@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>P2P Tetris</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main id="menu">
+  <h1>P2P Tetris</h1>
+  <button id="solo">Play solo</button>
+  <p id="status"></p>
+  <p class="hint">Arrows move and soft-drop. Up or X rotates, Z rotates back. Space hard-drops.</p>
+</main>
+<main id="play" hidden>
+  <div class="board">
+    <canvas id="me" width="300" height="600"></canvas>
+    <div id="overlay" hidden><p id="msg"></p><button id="again"></button></div>
+  </div>
+  <aside>
+    <div id="stats"></div>
+  </aside>
+</main>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
