@@ -10,18 +10,29 @@
 <main id="menu">
   <h1>P2P Tetris</h1>
   <button id="solo">Play solo</button>
+  <button id="create">Create a room</button>
+  <div class="row"><input id="code" placeholder="Room code" maxlength="5" autocomplete="off"><button id="join">Join</button></div>
+  <div id="room" hidden>
+    <p>Send this link to your opponent:</p>
+    <div class="row"><input id="share" readonly><button id="copy">Copy</button></div>
+  </div>
   <p id="status"></p>
-  <p class="hint">Arrows move and soft-drop. Up or X rotates, Z rotates back. Space hard-drops.</p>
+  <p class="hint">This project is a MAJOR work in progress!</p>
 </main>
 <main id="play" hidden>
+  <canvas id="side" width="110" height="330"></canvas>
   <div class="board">
     <canvas id="me" width="300" height="600"></canvas>
     <div id="overlay" hidden><p id="msg"></p><button id="again"></button></div>
   </div>
   <aside>
+    <canvas id="opp" width="150" height="300"></canvas>
     <div id="stats"></div>
   </aside>
 </main>
-<script type="module" src="js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script src="tetris.js"></script>
+<script src="net.js"></script>
+<script src="main.js"></script>
 </body>
 </html>
