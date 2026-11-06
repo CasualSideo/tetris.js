@@ -13,7 +13,7 @@ function overlay(text, label, fn) {
   $('#overlay').hidden = false;
 }
 
-
+// ---------- game flow ----------
 function startGame(seed) {
   over = false; oppBoard = null;
   for (const k in held) delete held[k];
@@ -44,7 +44,7 @@ function onData(d) {
   else if (d.t === 'dead' && game) end(true);
 }
 
-
+// ---------- lobby ----------
 function connect() {
   net = new Net({
     ready: code => {
@@ -72,7 +72,44 @@ const room = new URLSearchParams(location.search).get('room');
 if (room) join(room);
 
 // ---------- input ----------
-const ACT = { ArrowLeft: 'L', ArrowRight: 'R', ArrowDown: 'D', ArrowUp: 'cw', KeyX: 'cw', KeyZ: 'ccw', Space: 'hd', KeyC: 'hold', ShiftLeft: 'hold' };
+const NAMES = { L: 'Move left', R: 'Move right', D: 'Soft drop', cw: 'Rotate', ccw: 'Rotate back', hd: 'Hard drop', hold: 'Hold' };
+const DEFAULTS = { L: ['ArrowLeft'], R: ['ArrowRight'], D: ['ArrowDown'], cw: ['ArrowUp', 'KeyX'], ccw: ['KeyZ'], hd: ['Space'], hold: ['KeyC', 'ShiftLeft'] };
+const clone = o => JSON.parse(JSON.stringify(o));
+const label = c => ({ ArrowLeft: '←', ArrowRight: '→', ArrowUp: '↑', ArrowDown: '↓' }[c] || c.replace(/^(Key|Digit)/, '').replace(/([a-z])([A-Z0-9])/g, '$1 $2'));
+let binds = clone(DEFAULTS), ACT = {}, listening = null;
+try {
+  const s = JSON.parse(localStorage.getItem('p2p-tetris-keys'));
+  if (s && Object.keys(DEFAULTS).every(a => Array.isArray(s[a]) && s[a].every(c => typeof c === 'string'))) binds = s;
+} catch {}
+const keyText = a => binds[a].map(label).join(' / ') || 'Unbound';
+function applyBinds() {
+  ACT = {};
+  for (const a in binds) binds[a].forEach(c => (ACT[c] = a));
+  try { localStorage.setItem('p2p-tetris-keys', JSON.stringify(binds)); } catch {}
+  $('.hint').textContent = Object.keys(NAMES).map(a => `${NAMES[a]}: ${keyText(a)}`).join(' · ');
+  $('#keylist').replaceChildren(...Object.keys(NAMES).map(a => {
+    const row = document.createElement('div'), b = document.createElement('button');
+    row.className = 'keyrow'; row.textContent = NAMES[a];
+    b.textContent = listening === a ? 'Press a key…' : keyText(a);
+    b.onclick = () => { listening = a; applyBinds(); };
+    row.append(b); return row;
+  }));
+}
+// capture phase, so a key being assigned never reaches the game
+addEventListener('keydown', e => {
+  if (!listening) return;
+  e.preventDefault(); e.stopImmediatePropagation();
+  if (e.code !== 'Escape') {
+    for (const a in binds) binds[a] = binds[a].filter(c => c !== e.code);
+    binds[listening] = [e.code];
+  }
+  listening = null; applyBinds();
+}, true);
+$('#keys').onclick = () => $('#keysDlg').showModal();
+$('#keysDone').onclick = () => $('#keysDlg').close();
+$('#keysDlg').onclose = () => { listening = null; applyBinds(); };
+$('#keysReset').onclick = () => { binds = clone(DEFAULTS); listening = null; applyBinds(); };
+applyBinds();
 function act(a) {
   if (!game || game.dead) return;
   if (a === 'L') game.move(-1); else if (a === 'R') game.move(1);
@@ -89,7 +126,7 @@ addEventListener('keydown', e => {
 addEventListener('keyup', e => delete held[ACT[e.code]]);
 addEventListener('blur', () => { for (const k in held) delete held[k]; });
 
-
+// ---------- rendering ----------
 function cell(ctx, x, y, s, v, a = 1) {
   ctx.globalAlpha = a; ctx.fillStyle = COLORS[v];
   ctx.fillRect(x * s + 1, y * s + 1, s - 2, s - 2); ctx.globalAlpha = 1;
